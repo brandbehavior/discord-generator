@@ -257,10 +257,6 @@
           </div>
           <textarea id="output" readonly aria-label="Generated Discord markdown" placeholder="Your markdown will appear here…"></textarea>
           <div class="output-actions">
-            <div class="small-actions">
-              <button class="quiet-btn" id="doubleSpace">Double space</button>
-              <button class="quiet-btn" id="tripleSpace">Triple space</button>
-            </div>
             <button class="copy-btn" id="copyButton">COPY MARKDOWN ↗</button>
           </div>
         </div>
@@ -485,16 +481,6 @@
       editor.focus();
     }
   });
-  function applySpacing(blankLines) {
-    const text = editor.value.trim();
-    if (!text) return;
-    previousText = editor.value;
-    const paragraphs = text.split(/\n\s*\n+/).map(p => p.trim()).filter(Boolean);
-    editor.value = paragraphs.join("\n".repeat(blankLines + 1));
-    update();
-  }
-  document.querySelector("#doubleSpace").addEventListener("click", () => applySpacing(1));
-  document.querySelector("#tripleSpace").addEventListener("click", () => applySpacing(2));
   document.querySelector("#copyButton").addEventListener("click", async () => {
     if (!output.value) {
       document.querySelector(".output-label span").textContent = "Write something first to create markdown.";
