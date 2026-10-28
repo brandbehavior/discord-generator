@@ -44,12 +44,6 @@
     padding-bottom: 22px; border-bottom: 0;
   }
   .brand { display: flex; align-items: center; gap: 13px; }
-  .brand-mark {
-    width: auto; height: auto; display: block; flex: 0 0 auto;
-    background: transparent; color: var(--wine); border-radius: 0;
-    box-shadow: none; font: 1.25rem/1 var(--sans);
-  }
-  .brand-star { display: inline-block; color: var(--wine); background: none; border: 0; border-radius: 0; box-shadow: none; width: auto; height: auto; padding: 0; font: 1.25rem/1 var(--sans); }
   .brand-name { font: 700 1.18rem var(--sans); letter-spacing: -.045em; }
   .brand-sub { margin-top: 3px; color: var(--muted); font-size: .66rem; text-transform: uppercase; letter-spacing: .17em; }
   .intro { display: none; }
@@ -176,7 +170,7 @@
 <main class="shell">
   <header class="masthead">
     <div class="brand">
-      <span class="brand-star" aria-hidden="true">★</span>
+      <span aria-hidden="true" style="display:inline-block;color:#792f43;background:transparent;border:0;border-radius:0;box-shadow:none;width:auto;height:auto;padding:0;font-size:1.25rem;line-height:1">★</span>
       <div>
         <div class="brand-name">Discord Formatting Generator</div>
         </div>
