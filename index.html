@@ -41,13 +41,13 @@
   .shell { width: min(1440px, 100%); margin: 0 auto; padding: 28px clamp(16px, 4vw, 58px) 40px; }
   .masthead {
     display: flex; align-items: center; justify-content: space-between; gap: 18px;
-    padding-bottom: 22px;
+    padding-bottom: 22px; border-bottom: 0;
   }
   .brand { display: flex; align-items: center; gap: 13px; }
   .brand-mark {
     width: 42px; height: 42px; display: grid; place-items: center;
-    background: transparent; color: var(--wine); border-radius: 0;
-    font: 600 1.65rem/1 var(--sans); box-shadow: none;
+    background: var(--wine); color: #fff8f1; border-radius: 50%;
+    font: 600 1.35rem var(--sans); box-shadow: 0 5px 14px #792f4326;
   }
   .brand-name { font: 700 1.18rem var(--sans); letter-spacing: -.045em; }
   .brand-sub { margin-top: 3px; color: var(--muted); font-size: .66rem; text-transform: uppercase; letter-spacing: .17em; }
@@ -64,7 +64,7 @@
   }
   .pane-head {
     min-height: 62px; display: flex; align-items: center; justify-content: space-between;
-    gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--line);
+    gap: 12px; padding: 16px 20px; border-bottom: 0;
     background: rgba(255,253,249,.7);
   }
   .pane-title { display: flex; align-items: center; gap: 10px; font-size: .77rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
@@ -102,12 +102,12 @@
     color: var(--muted); font-size: .68rem; font-weight: 800; letter-spacing: .06em;
     text-transform: uppercase;
   }
+  .preview-customize { display: grid; grid-template-columns: 105px minmax(0, 1fr); align-items: center; }
   .preview-customize input {
-    min-width: 0; width: min(100%, 320px); flex: 1; border: 1px solid var(--line); border-radius: 6px;
-    padding: 7px 8px; background: var(--surface); color: var(--ink);
+    min-width: 0; width: 100%; box-sizing: border-box; border: 1px solid var(--line); border-radius: 6px;
+    padding: 8px 10px; background: var(--surface); color: var(--ink);
     font-size: .78rem; letter-spacing: 0; text-transform: none;
   }
-  .preview-customize input:last-child { width: min(100%, 320px); text-align: left; }
   .discord-window {
     border: 1px solid #e1d8d3; border-radius: 11px; background: #f4f0ed;
     overflow: hidden; min-height: 360px;
@@ -119,8 +119,9 @@
   .channel-icon { color: var(--wine); font-size: 1.05rem; }
   .discord-message { display: flex; gap: 12px; padding: 20px 15px; }
   .avatar {
-    flex: 0 0 auto; width: auto; height: auto; display: block;
-    border-radius: 0; color: var(--wine); background: transparent; font: 1.45rem/1 var(--sans);
+    width: auto; height: auto; display: block; flex: 0 0 auto;
+    background: transparent; color: var(--wine); border-radius: 0;
+    box-shadow: none; font: 1.25rem/1 var(--sans);
   }
   .message-content { min-width: 0; flex: 1; }
   .message-meta { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; margin: 1px 0 8px; }
@@ -139,13 +140,12 @@
   #rendered .plain-divider { border: 0; border-top: 1px solid #c7a1a6; margin: .9em 0; }
   #rendered pre { white-space: pre-wrap; background: #e5ddda; padding: 10px; border-radius: 7px; font: .82em/1.5 var(--mono); }
   #rendered ul { padding-left: 1.35em; }
-  .preview-caption { margin: 12px 1px 0; color: var(--muted); font: 500 .78rem/1.6 var(--sans); }
   .output-area { margin-top: 18px; border-top: 1px solid var(--line); padding-top: 17px; }
   .output-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 9px; }
   .output-label { font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .13em; }
   .output-label span { color: var(--muted); font-weight: 500; letter-spacing: 0; text-transform: none; }
   #output { width: 100%; min-height: 95px; resize: vertical; padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: #faf6f1; color: #5c4b4b; font: .76rem/1.6 var(--mono); }
-  .output-actions { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+  .output-actions { display: flex; justify-content: center; align-items: center; gap: 10px; margin: 14px auto 0; flex-wrap: wrap; width: 100%; }
   .small-actions { display: flex; gap: 7px; flex-wrap: wrap; }
   .quiet-btn { border: 1px solid var(--line); border-radius: 7px; background: transparent; color: var(--muted); padding: 8px 10px; font-size: .72rem; }
   .quiet-btn:hover { color: var(--wine); background: var(--rose-light); }
@@ -178,8 +178,7 @@
       <div class="brand-mark" aria-hidden="true">★</div>
       <div>
         <div class="brand-name">Discord Formatting Generator</div>
-        <div class="brand-sub">A writing tool for roleplayers</div>
-      </div>
+        </div>
     </div>
   </header>
 
@@ -242,7 +241,6 @@
           <textarea id="output" readonly aria-label="Generated Discord markdown" placeholder="Your markdown will appear here…"></textarea>
           <div class="output-actions">
             <button class="copy-btn" id="copyButton">COPY TEXT</button>
-            <span id="copyStatus" role="status" aria-live="polite"></span>
           </div>
         </div>
       </div>
@@ -465,16 +463,16 @@
   });
   document.querySelector("#copyButton").addEventListener("click", async () => {
     if (!output.value) {
-      document.querySelector("#copyStatus").textContent = "Write something first.";
+      document.querySelector(".output-label span").textContent = "Write something first to create markdown.";
       return;
     }
     try {
       await navigator.clipboard.writeText(output.value);
-      document.querySelector("#copyStatus").textContent = "Copied — ready to paste into Discord.";
+      document.querySelector(".output-label span").textContent = "Copied — ready to paste into Discord.";
     } catch {
       output.focus();
       output.select();
-      document.querySelector("#copyStatus").textContent = "Select the text and press Ctrl/Cmd+C to copy.";
+      document.querySelector(".output-label span").textContent = "Select the text and press Ctrl/Cmd+C to copy.";
     }
   });
   editor.addEventListener("input", update);
