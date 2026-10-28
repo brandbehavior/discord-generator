@@ -41,13 +41,13 @@
   .shell { width: min(1440px, 100%); margin: 0 auto; padding: 28px clamp(16px, 4vw, 58px) 40px; }
   .masthead {
     display: flex; align-items: center; justify-content: space-between; gap: 18px;
-    padding-bottom: 22px; border-bottom: 1px solid var(--line);
+    padding-bottom: 22px;
   }
   .brand { display: flex; align-items: center; gap: 13px; }
   .brand-mark {
     width: 42px; height: 42px; display: grid; place-items: center;
-    background: var(--wine); color: #fff8f1; border-radius: 50%;
-    font: 600 1.35rem var(--sans); box-shadow: 0 5px 14px #792f4326;
+    background: transparent; color: var(--wine); border-radius: 0;
+    font: 600 1.65rem/1 var(--sans); box-shadow: none;
   }
   .brand-name { font: 700 1.18rem var(--sans); letter-spacing: -.045em; }
   .brand-sub { margin-top: 3px; color: var(--muted); font-size: .66rem; text-transform: uppercase; letter-spacing: .17em; }
@@ -103,11 +103,11 @@
     text-transform: uppercase;
   }
   .preview-customize input {
-    min-width: 0; width: 120px; border: 1px solid var(--line); border-radius: 6px;
+    min-width: 0; width: min(100%, 320px); flex: 1; border: 1px solid var(--line); border-radius: 6px;
     padding: 7px 8px; background: var(--surface); color: var(--ink);
     font-size: .78rem; letter-spacing: 0; text-transform: none;
   }
-  .preview-customize input:last-child { width: 48px; text-align: center; }
+  .preview-customize input:last-child { width: min(100%, 320px); text-align: left; }
   .discord-window {
     border: 1px solid #e1d8d3; border-radius: 11px; background: #f4f0ed;
     overflow: hidden; min-height: 360px;
@@ -119,8 +119,8 @@
   .channel-icon { color: var(--wine); font-size: 1.05rem; }
   .discord-message { display: flex; gap: 12px; padding: 20px 15px; }
   .avatar {
-    flex: 0 0 35px; width: 35px; height: 35px; display: grid; place-items: center;
-    border-radius: 50%; color: #fff9f3; background: var(--wine); font: italic 1.1rem var(--serif);
+    flex: 0 0 auto; width: auto; height: auto; display: block;
+    border-radius: 0; color: var(--wine); background: transparent; font: 1.45rem/1 var(--sans);
   }
   .message-content { min-width: 0; flex: 1; }
   .message-meta { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; margin: 1px 0 8px; }
@@ -145,7 +145,7 @@
   .output-label { font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .13em; }
   .output-label span { color: var(--muted); font-weight: 500; letter-spacing: 0; text-transform: none; }
   #output { width: 100%; min-height: 95px; resize: vertical; padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: #faf6f1; color: #5c4b4b; font: .76rem/1.6 var(--mono); }
-  .output-actions { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+  .output-actions { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
   .small-actions { display: flex; gap: 7px; flex-wrap: wrap; }
   .quiet-btn { border: 1px solid var(--line); border-radius: 7px; background: transparent; color: var(--muted); padding: 8px 10px; font-size: .72rem; }
   .quiet-btn:hover { color: var(--wine); background: var(--rose-light); }
@@ -215,7 +215,6 @@
           <span><b id="charCount">0</b> characters</span>
           <span><b id="paragraphCount">0</b> paragraphs</span>
         </div>
-        <span>LOCAL DRAFT</span>
       </div>
       <p class="limit-note">Discord message limit: <strong>2,000 characters</strong> for non-Nitro accounts. Nitro supports up to 4,000 characters per message. This counter includes spaces and formatting characters.</p>
     </section>
@@ -239,14 +238,11 @@
             </div>
           </div>
         </div>
-        <p class="preview-caption">A visual approximation of Discord. Your original markdown is preserved below for copying.</p>
         <div class="output-area">
-          <div class="output-head">
-            <div class="output-label">03 / Copy-ready markdown <span>— paste this code directly into Discord</span></div>
-          </div>
           <textarea id="output" readonly aria-label="Generated Discord markdown" placeholder="Your markdown will appear here…"></textarea>
           <div class="output-actions">
-            <button class="copy-btn" id="copyButton">COPY MARKDOWN ↗</button>
+            <button class="copy-btn" id="copyButton">COPY TEXT</button>
+            <span id="copyStatus" role="status" aria-live="polite"></span>
           </div>
         </div>
       </div>
@@ -469,16 +465,16 @@
   });
   document.querySelector("#copyButton").addEventListener("click", async () => {
     if (!output.value) {
-      document.querySelector(".output-label span").textContent = "Write something first to create markdown.";
+      document.querySelector("#copyStatus").textContent = "Write something first.";
       return;
     }
     try {
       await navigator.clipboard.writeText(output.value);
-      document.querySelector(".output-label span").textContent = "Copied — ready to paste into Discord.";
+      document.querySelector("#copyStatus").textContent = "Copied — ready to paste into Discord.";
     } catch {
       output.focus();
       output.select();
-      document.querySelector(".output-label span").textContent = "Select the text and press Ctrl/Cmd+C to copy.";
+      document.querySelector("#copyStatus").textContent = "Select the text and press Ctrl/Cmd+C to copy.";
     }
   });
   editor.addEventListener("input", update);
