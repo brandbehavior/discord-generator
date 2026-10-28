@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f7f1e8">
+<title>Marginalia — Discord RP Formatter</title>
+<style>
+  :root {
+    --paper: #f7f1e8;
+    --paper-deep: #eee4d8;
+    --surface: #fffdf9;
+    --ink: #292321;
+    --muted: #80736e;
+    --line: #ded1c7;
+    --wine: #792f43;
+    --wine-dark: #5f2032;
+    --rose: #ead5d6;
+    --rose-light: #f5e9e7;
+    --green: #697568;
+    --shadow: 0 18px 48px rgba(67, 40, 39, .07);
+    --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+    --sans: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+    --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; color: var(--ink); background:
+      radial-gradient(ellipse at 8% 0%, rgba(234,213,214,.45), transparent 34rem),
+      var(--paper);
+    font-family: var(--sans); min-height: 100vh;
+  }
+  button, textarea, input { font: inherit; }
+  button { cursor: pointer; }
+  button:focus-visible, textarea:focus-visible, input:focus-visible {
+    outline: 3px solid #bd8795; outline-offset: 2px;
+  }
+  .shell { width: min(1440px, 100%); margin: 0 auto; padding: 28px clamp(16px, 4vw, 58px) 40px; }
+  .masthead {
+    display: flex; align-items: center; justify-content: space-between; gap: 18px;
+    padding-bottom: 22px; border-bottom: 1px solid var(--line);
+  }
+  .brand { display: flex; align-items: center; gap: 13px; }
+  .brand-mark {
+    width: 42px; height: 42px; display: grid; place-items: center;
+    background: var(--wine); color: #fff8f1; border-radius: 50%;
+    font: italic 1.5rem var(--serif); box-shadow: 0 5px 14px #792f4326;
+  }
+  .brand-name { font: 600 1.35rem var(--serif); letter-spacing: -.035em; }
+  .brand-sub { margin-top: 3px; color: var(--muted); font-size: .66rem; text-transform: uppercase; letter-spacing: .17em; }
+  .header-note { color: var(--muted); font: italic .95rem var(--serif); text-align: right; }
+  .intro { display: flex; justify-content: space-between; align-items: end; gap: 24px; padding: 32px 0 25px; }
+  .kicker { color: var(--wine); font-size: .68rem; font-weight: 800; letter-spacing: .19em; text-transform: uppercase; margin: 0 0 10px; }
+  h1 { font: 500 clamp(2.3rem, 5vw, 4.3rem)/.98 var(--serif); letter-spacing: -.055em; margin: 0; }
+  h1 em { color: var(--wine); font-weight: 400; }
+  .intro-copy { max-width: 370px; color: var(--muted); font: 1rem/1.65 var(--serif); margin: 13px 0 0; }
+  .folio { color: var(--muted); font: .72rem var(--mono); letter-spacing: .06em; white-space: nowrap; padding-bottom: 4px; }
+  .workspace { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); gap: 18px; align-items: stretch; }
+  .pane {
+    min-width: 0; background: var(--surface); border: 1px solid var(--line);
+    border-radius: 16px; overflow: hidden; box-shadow: var(--shadow);
+  }
+  .pane-head {
+    min-height: 62px; display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--line);
+    background: rgba(255,253,249,.7);
+  }
+  .pane-title { display: flex; align-items: center; gap: 10px; font-size: .77rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+  .pane-number { color: var(--wine); font: italic 1rem var(--serif); letter-spacing: 0; }
+  .live-label { display: inline-flex; align-items: center; gap: 7px; color: var(--green); font-size: .7rem; font-weight: 700; }
+  .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+  .editor-tools { padding: 13px 17px 0; display: flex; gap: 6px; flex-wrap: wrap; }
+  .tool {
+    border: 1px solid var(--line); border-radius: 7px; background: var(--surface);
+    color: var(--ink); min-width: 34px; height: 32px; padding: 0 9px;
+    font-size: .82rem; transition: background .15s, border-color .15s;
+  }
+  .tool:hover { background: var(--rose-light); border-color: #d7b8bd; }
+  .tool strong, .tool em { color: var(--wine); }
+  .tool-sep { width: 1px; height: 23px; margin: 4px 3px; background: var(--line); }
+  .editor-wrap { padding: 12px 20px 0; }
+  #editor {
+    display: block; width: 100%; min-height: 365px; resize: vertical; border: 0;
+    background: transparent; color: var(--ink); padding: 7px 0 16px;
+    font: 1.12rem/1.85 var(--serif); outline-offset: -3px;
+  }
+  #editor::placeholder { color: #b6a7a0; font-style: italic; }
+  .editor-foot {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    border-top: 1px solid var(--line); margin: 0 20px; padding: 13px 0 15px;
+    color: var(--muted); font-size: .7rem; letter-spacing: .04em;
+  }
+  .counts { display: flex; gap: 15px; }
+  .counts b { color: var(--ink); font-weight: 700; }
+  .clear-btn { border: 0; background: none; color: var(--wine); padding: 4px 0; font-size: .72rem; font-weight: 700; }
+  .preview-inner { padding: 20px; }
+  .discord-window {
+    border: 1px solid #e1d8d3; border-radius: 11px; background: #f4f0ed;
+    overflow: hidden; min-height: 360px;
+  }
+  .discord-bar {
+    padding: 11px 14px; background: #e8dfdb; color: #685d59; font-size: .72rem;
+    display: flex; align-items: center; gap: 8px; font-weight: 700;
+  }
+  .channel-icon { color: var(--wine); font-size: 1.05rem; }
+  .discord-message { display: flex; gap: 12px; padding: 20px 15px; }
+  .avatar {
+    flex: 0 0 35px; width: 35px; height: 35px; display: grid; place-items: center;
+    border-radius: 50%; color: #fff9f3; background: var(--wine); font: italic 1.1rem var(--serif);
+  }
+  .message-content { min-width: 0; flex: 1; }
+  .message-meta { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; margin: 1px 0 8px; }
+  .username { color: #342d2b; font-size: .88rem; font-weight: 800; }
+  .timestamp { color: #958782; font-size: .65rem; }
+  #rendered { color: #403937; font-size: .91rem; line-height: 1.65; overflow-wrap: anywhere; white-space: pre-wrap; }
+  #rendered p { margin: 0 0 .9em; }
+  #rendered p:last-child { margin-bottom: 0; }
+  #rendered blockquote { margin: 0 0 .75em; border-left: 3px solid #c7a1a6; padding-left: 10px; color: #6f5e5d; }
+  #rendered code { font: .84em var(--mono); background: #e5ddda; border-radius: 4px; padding: 2px 4px; }
+  #rendered pre { white-space: pre-wrap; background: #e5ddda; padding: 10px; border-radius: 7px; font: .82em/1.5 var(--mono); }
+  #rendered ul { padding-left: 1.35em; }
+  .preview-caption { margin: 12px 1px 0; color: var(--muted); font: italic .88rem/1.5 var(--serif); }
+  .output-area { margin-top: 18px; border-top: 1px solid var(--line); padding-top: 17px; }
+  .output-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 9px; }
+  .output-label { font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .13em; }
+  .output-label span { color: var(--muted); font-weight: 500; letter-spacing: 0; text-transform: none; }
+  #output { width: 100%; min-height: 95px; resize: vertical; padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: #faf6f1; color: #5c4b4b; font: .76rem/1.6 var(--mono); }
+  .output-actions { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+  .small-actions { display: flex; gap: 7px; flex-wrap: wrap; }
+  .quiet-btn { border: 1px solid var(--line); border-radius: 7px; background: transparent; color: var(--muted); padding: 8px 10px; font-size: .72rem; }
+  .quiet-btn:hover { color: var(--wine); background: var(--rose-light); }
+  .copy-btn { border: 0; border-radius: 7px; background: var(--wine); color: #fffaf6; padding: 10px 15px; font-size: .72rem; font-weight: 800; letter-spacing: .04em; }
+  .copy-btn:hover { background: var(--wine-dark); }
+  .footer { display: flex; justify-content: space-between; gap: 14px; padding: 22px 2px 0; color: var(--muted); font: italic .86rem var(--serif); }
+  .footer strong { color: var(--wine); font-weight: 500; }
+  @media (max-width: 850px) {
+    .workspace { grid-template-columns: 1fr; }
+    #editor { min-height: 270px; }
+    .discord-window { min-height: 260px; }
+    .intro { align-items: start; }
+    .folio { display: none; }
+  }
+  @media (max-width: 520px) {
+    .shell { padding-top: 17px; }
+    .header-note { display: none; }
+    .intro { padding-top: 25px; }
+    .pane-head { padding: 14px; }
+    .editor-wrap, .preview-inner { padding-left: 14px; padding-right: 14px; }
+    .editor-foot { margin-left: 14px; margin-right: 14px; }
+    .counts { gap: 8px; }
+    .counts span { font-size: .64rem; }
+    .footer { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<main class="shell">
+  <header class="masthead">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">m.</div>
+      <div>
+        <div class="brand-name">marginalia</div>
+        <div class="brand-sub">a formatter for writers</div>
+      </div>
+    </div>
+    <div class="header-note">For the words between the lines.</div>
+  </header>
+
+  <section class="intro">
+    <div>
+      <p class="kicker">The writing room · No. 001</p>
+      <h1>Make the words<br><em>feel like yours.</em></h1>
+      <p class="intro-copy">A quiet little workspace for shaping roleplay posts into Discord-ready markdown. Write on the left; see how it reads on the right.</p>
+    </div>
+    <div class="folio">DISCORD MARKDOWN / 01</div>
+  </section>
+
+  <section class="workspace" aria-label="RP formatter workspace">
+    <section class="pane" aria-labelledby="write-title">
+      <div class="pane-head">
+        <div class="pane-title" id="write-title"><span class="pane-number">01</span> The manuscript</div>
+        <button class="clear-btn" id="clearButton">Clear draft ↗</button>
+      </div>
+      <div class="editor-tools" role="toolbar" aria-label="Formatting controls">
+        <button class="tool" data-wrap="**" title="Bold"><strong>B</strong></button>
+        <button class="tool" data-wrap="*" title="Italic"><em>I</em></button>
+        <button class="tool" data-wrap="***" title="Bold and italic"><strong><em>BI</em></strong></button>
+        <button class="tool" data-wrap="~~" title="Strikethrough"><s>S</s></button>
+        <span class="tool-sep"></span>
+        <button class="tool" id="quoteButton" title="Quote selected text or add a quote line">❝</button>
+        <button class="tool" id="bulletButton" title="Bullet point">• List</button>
+        <button class="tool" id="codeButton" title="Inline code">`code`</button>
+        <button class="tool" id="symbolsButton" title="Insert a decorative divider">✦ divider</button>
+      </div>
+      <div class="editor-wrap">
+        <textarea id="editor" spellcheck="true" aria-label="Write your roleplay post" placeholder="The first line is always a beginning…&#10;&#10;Write your post here. Select a phrase and use the tools above to format it."></textarea>
+      </div>
+      <div class="editor-foot">
+        <div class="counts">
+          <span><b id="wordCount">0</b> words</span>
+          <span><b id="charCount">0</b> characters</span>
+          <span><b id="paragraphCount">0</b> paragraphs</span>
+        </div>
+        <span>LOCAL DRAFT</span>
+      </div>
+    </section>
+
+    <section class="pane" aria-labelledby="preview-title">
+      <div class="pane-head">
+        <div class="pane-title" id="preview-title"><span class="pane-number">02</span> The reading copy</div>
+        <span class="live-label"><span class="live-dot"></span> LIVE PREVIEW</span>
+      </div>
+      <div class="preview-inner">
+        <div class="discord-window">
+          <div class="discord-bar"><span class="channel-icon">#</span> roleplay · preview</div>
+          <div class="discord-message">
+            <div class="avatar" aria-hidden="true">m</div>
+            <div class="message-content">
+              <div class="message-meta"><span class="username">your character</span><span class="timestamp">Today at 9:41 PM</span></div>
+              <div id="rendered"><span style="color:#958782;font-style:italic">Your formatted post will appear here as you write.</span></div>
+            </div>
+          </div>
+        </div>
+        <p class="preview-caption">A visual approximation of Discord. Your original markdown is preserved below for copying.</p>
+        <div class="output-area">
+          <div class="output-head">
+            <div class="output-label">03 / Copy-ready markdown <span>— what Discord receives</span></div>
+          </div>
+          <textarea id="output" readonly aria-label="Generated Discord markdown" placeholder="Your markdown will appear here…"></textarea>
+          <div class="output-actions">
+            <div class="small-actions">
+              <button class="quiet-btn" id="doubleSpace">Double space</button>
+              <button class="quiet-btn" id="tripleSpace">Triple space</button>
+            </div>
+            <button class="copy-btn" id="copyButton">COPY MARKDOWN ↗</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <footer class="footer">
+    <span><strong>marginalia</strong> — a little room for the details.</span>
+    <span>Your draft stays in this browser tab.</span>
+  </footer>
+</main>
+<script>
+  const editor = document.querySelector("#editor");
+  const output = document.querySelector("#output");
+  const rendered = document.querySelector("#rendered");
+  const statusMessage = document.querySelector(".output-label span");
+  let previousText = "";
+
+  function escapeHTML(value) {
+    return value.replace(/[&<>"']/g, char => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    })[char]);
+  }
+
+  // A lightweight preview renderer for common Discord markdown.
+  // Output remains the original markdown; this renderer is only for visual preview.
+  function renderMarkdown(source) {
+    let safe = escapeHTML(source);
+    const codeBlocks = [];
+    safe = safe.replace(/```([\s\S]*?)```/g, (_, code) => {
+      const key = `@@CODEBLOCK${codeBlocks.length}@@`;
+      codeBlocks.push(`<pre><code>${code.replace(/^\n|\n$/g, "")}</code></pre>`);
+      return key;
+    });
+    safe = safe.replace(/`([^`\n]+)`/g, "<code>$1</code>");
+    safe = safe.replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>");
+    safe = safe.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    safe = safe.replace(/\*(.+?)\*/g, "<em>$1</em>");
+    safe = safe.replace(/__(.+?)__/g, "<u>$1</u>");
+    safe = safe.replace(/~~(.+?)~~/g, "<del>$1</del>");
+    const paragraphs = safe.split(/\n{2,}/).map(block => {
+      if (/^@@CODEBLOCK\d+@@$/.test(block)) return block;
+      const lines = block.split("\n");
+      if (lines.every(line => /^&gt;\s?/.test(line))) {
+        return `<blockquote>${lines.map(line => line.replace(/^&gt;\s?/, "")).join("<br>")}</blockquote>`;
+      }
+      if (lines.every(line => /^(?:[-*]|\d+\.)\s/.test(line))) {
+        const ordered = /^\d+\./.test(lines[0]);
+        const tag = ordered ? "ol" : "ul";
+        return `<${tag}>${lines.map(line => `<li>${line.replace(/^(?:[-*]|\d+\.)\s/, "")}</li>`).join("")}</${tag}>`;
+      }
+      return `<p>${lines.join("<br>")}</p>`;
+    });
+    let result = paragraphs.join("");
+    result = result.replace(/@@CODEBLOCK(\d+)@@/g, (_, index) => codeBlocks[Number(index)]);
+    return result;
+  }
+
+  function update() {
+    const text = editor.value;
+    const trimmed = text.trim();
+    document.querySelector("#wordCount").textContent = trimmed ? trimmed.split(/\s+/).length : 0;
+    document.querySelector("#charCount").textContent = text.length;
+    document.querySelector("#paragraphCount").textContent = trimmed ? trimmed.split(/\n\s*\n/).filter(Boolean).length : 0;
+    output.value = text;
+    rendered.innerHTML = trimmed
+      ? renderMarkdown(text)
+      : '<span style="color:#958782;font-style:italic">Your formatted post will appear here as you write.</span>';
+  }
+
+  function wrapSelection(marker, closing = marker) {
+    previousText = editor.value;
+    const start = editor.selectionStart;
+    const end = editor.selectionEnd;
+    const selected = editor.value.slice(start, end);
+    editor.setRangeText(marker + selected + closing, start, end, "select");
+    if (!selected) editor.setSelectionRange(start + marker.length, start + marker.length);
+    editor.focus();
+    update();
+  }
+
+  function insertText(text) {
+    previousText = editor.value;
+    const start = editor.selectionStart;
+    const end = editor.selectionEnd;
+    editor.setRangeText(text, start, end, "end");
+    editor.focus();
+    update();
+  }
+
+  document.querySelectorAll("[data-wrap]").forEach(button => {
+    button.addEventListener("click", () => wrapSelection(button.dataset.wrap));
+  });
+  document.querySelector("#quoteButton").addEventListener("click", () => {
+    const start = editor.selectionStart;
+    const end = editor.selectionEnd;
+    if (start !== end) {
+      const selected = editor.value.slice(start, end).split("\n").map(line => "> " + line).join("\n");
+      previousText = editor.value;
+      editor.setRangeText(selected, start, end, "select");
+      update();
+    } else {
+      insertText("> ");
+    }
+  });
+  document.querySelector("#bulletButton").addEventListener("click", () => insertText("• "));
+  document.querySelector("#codeButton").addEventListener("click", () => wrapSelection("`"));
+  document.querySelector("#symbolsButton").addEventListener("click", () => insertText("\n\n— · — · — ✦ — · — · —\n\n"));
+  document.querySelector("#clearButton").addEventListener("click", () => {
+    if (!editor.value || confirm("Clear your current draft?")) {
+      previousText = editor.value;
+      editor.value = "";
+      update();
+      editor.focus();
+    }
+  });
+  function applySpacing(blankLines) {
+    const text = editor.value.trim();
+    if (!text) return;
+    previousText = editor.value;
+    const paragraphs = text.split(/\n\s*\n+/).map(p => p.trim()).filter(Boolean);
+    editor.value = paragraphs.join("\n".repeat(blankLines + 1));
+    update();
+  }
+  document.querySelector("#doubleSpace").addEventListener("click", () => applySpacing(1));
+  document.querySelector("#tripleSpace").addEventListener("click", () => applySpacing(2));
+  document.querySelector("#copyButton").addEventListener("click", async () => {
+    if (!output.value) {
+      document.querySelector(".output-label span").textContent = "Write something first to create markdown.";
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(output.value);
+      document.querySelector(".output-label span").textContent = "Copied — ready to paste into Discord.";
+    } catch {
+      output.focus();
+      output.select();
+      document.querySelector(".output-label span").textContent = "Select the text and press Ctrl/Cmd+C to copy.";
+    }
+  });
+  editor.addEventListener("input", update);
+  update();
+</script>
+</body>
+</html>
