@@ -47,11 +47,10 @@
   .brand-mark {
     width: 42px; height: 42px; display: grid; place-items: center;
     background: var(--wine); color: #fff8f1; border-radius: 50%;
-    font: 600 1.15rem var(--sans); box-shadow: 0 5px 14px #792f4326;
+    font: 600 1.35rem var(--sans); box-shadow: 0 5px 14px #792f4326;
   }
   .brand-name { font: 700 1.18rem var(--sans); letter-spacing: -.045em; }
   .brand-sub { margin-top: 3px; color: var(--muted); font-size: .66rem; text-transform: uppercase; letter-spacing: .17em; }
-  .header-note { color: var(--muted); font: 500 .82rem var(--sans); text-align: right; }
   .intro { display: none; }
   .kicker { color: var(--wine); font-size: .68rem; font-weight: 800; letter-spacing: .19em; text-transform: uppercase; margin: 0 0 10px; }
   h1 { font: 500 clamp(2.3rem, 5vw, 4.3rem)/.98 var(--serif); letter-spacing: -.055em; margin: 0; }
@@ -70,8 +69,6 @@
   }
   .pane-title { display: flex; align-items: center; gap: 10px; font-size: .77rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
   .pane-number { color: var(--wine); font: italic 1rem var(--serif); letter-spacing: 0; }
-  .live-label { display: inline-flex; align-items: center; gap: 7px; color: var(--green); font-size: .7rem; font-weight: 700; }
-  .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
   .editor-tools { padding: 15px 20px 0; display: flex; gap: 6px; flex-wrap: wrap; }
   .tool {
     border: 1px solid var(--line); border-radius: 7px; background: var(--surface);
@@ -116,7 +113,7 @@
     overflow: hidden; min-height: 360px;
   }
   .discord-bar {
-    padding: 11px 14px; background: #e8db; color: #685d59; font-size: .72rem;
+    padding: 11px 14px; background: #e8dfdb; color: #685d59; font-size: .72rem;
     display: flex; align-items: center; gap: 8px; font-weight: 700;
   }
   .channel-icon { color: var(--wine); font-size: 1.05rem; }
@@ -148,14 +145,12 @@
   .output-label { font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .13em; }
   .output-label span { color: var(--muted); font-weight: 500; letter-spacing: 0; text-transform: none; }
   #output { width: 100%; min-height: 95px; resize: vertical; padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: #faf6f1; color: #5c4b4b; font: .76rem/1.6 var(--mono); }
-  .output-actions { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+  .output-actions { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
   .small-actions { display: flex; gap: 7px; flex-wrap: wrap; }
   .quiet-btn { border: 1px solid var(--line); border-radius: 7px; background: transparent; color: var(--muted); padding: 8px 10px; font-size: .72rem; }
   .quiet-btn:hover { color: var(--wine); background: var(--rose-light); }
   .copy-btn { border: 0; border-radius: 7px; background: var(--wine); color: #fffaf6; padding: 10px 15px; font-size: .72rem; font-weight: 800; letter-spacing: .04em; }
   .copy-btn:hover { background: var(--wine-dark); }
-  .footer { display: flex; justify-content: space-between; gap: 14px; padding: 22px 2px 0; color: var(--muted); font: 500 .78rem var(--sans); }
-  .footer strong { color: var(--wine); font-weight: 500; }
   @media (max-width: 850px) {
     .workspace { grid-template-columns: 1fr; }
     #editor { min-height: 270px; }
@@ -165,7 +160,6 @@
   }
   @media (max-width: 520px) {
     .shell { padding-top: 17px; }
-    .header-note { display: none; }
     .intro { padding-top: 25px; }
     .pane-head { padding: 14px; }
     .editor-wrap, .preview-inner { padding-left: 14px; padding-right: 14px; }
@@ -174,7 +168,6 @@
     .limit-note { margin-left: 14px; margin-right: 14px; }
     .counts { gap: 8px; }
     .counts span { font-size: .64rem; }
-    .footer { flex-direction: column; }
   }
 </style>
 </head>
@@ -182,6 +175,7 @@
 <main class="shell">
   <header class="masthead">
     <div class="brand">
+      <div class="brand-mark" aria-hidden="true">★</div>
       <div>
         <div class="brand-name">Discord Formatting Generator</div>
         <div class="brand-sub">A writing tool for roleplayers</div>
@@ -213,7 +207,7 @@
         <button class="tool" id="symbolsButton" title="Insert a simple horizontal divider">— divider</button>
       </div>
       <div class="editor-wrap">
-        <textarea id="editor" spellcheck="true" aria-label="Write your roleplay post" placeholder="The first line is always a beginning…&#10;&#10;Write your post here. Select a phrase and use the tools above to format it."></textarea>
+        <textarea id="editor" spellcheck="true" aria-label="Write your roleplay post" placeholder="Write your post here and use the tools above to format it."></textarea>
       </div>
       <div class="editor-foot">
         <div class="counts">
@@ -229,19 +223,16 @@
     <section class="pane" aria-labelledby="preview-title">
       <div class="pane-head">
         <div class="pane-title" id="preview-title"><span class="pane-number">02</span> The reading copy</div>
-        <span class="live-label"><span class="live-dot"></span> LIVE PREVIEW</span>
       </div>
       <div class="preview-inner">
         <div class="preview-customize">
           <label for="characterName">Preview name</label>
           <input id="characterName" type="text" maxlength="32" value="your character" aria-label="Preview character name">
-          <label for="avatarInitial">Avatar</label>
-          <input id="avatarInitial" type="text" maxlength="2" value="m" aria-label="Preview avatar letters">
         </div>
         <div class="discord-window">
-          <div class="discord-bar"><span class="channel-icon">#</span> roleplay · preview</div>
+          <div class="discord-bar"><span class="channel-icon">#</span> Discord preview</div>
           <div class="discord-message">
-            <div class="avatar" aria-hidden="true">m</div>
+            <div class="avatar" aria-hidden="true">★</div>
             <div class="message-content">
               <div class="message-meta"><span class="username">your character</span><span class="timestamp">Today at 9:41 PM</span></div>
               <div id="rendered"><span style="color:#958782;font-style:italic">Your formatted post will appear here as you write.</span></div>
@@ -251,7 +242,7 @@
         <p class="preview-caption">A visual approximation of Discord. Your original markdown is preserved below for copying.</p>
         <div class="output-area">
           <div class="output-head">
-            <div class="output-label">03 / Copy-ready markdown <span>— what Discord receives</span></div>
+            <div class="output-label">03 / Copy-ready markdown <span>— paste this code directly into Discord</span></div>
           </div>
           <textarea id="output" readonly aria-label="Generated Discord markdown" placeholder="Your markdown will appear here…"></textarea>
           <div class="output-actions">
@@ -340,7 +331,6 @@
       : '<span style="color:#958782;font-style:italic">Your formatted post will appear here as you write.</span>';
     const name = document.querySelector("#characterName").value.trim() || "your character";
     document.querySelector(".username").textContent = name;
-    document.querySelector(".avatar").textContent = document.querySelector("#avatarInitial").value.trim().slice(0, 2) || "m";
   }
 
   function toggleWrap(marker, closing = marker) {
@@ -469,7 +459,6 @@
   });
 
   document.querySelector("#characterName").addEventListener("input", update);
-  document.querySelector("#avatarInitial").addEventListener("input", update);
   document.querySelector("#clearButton").addEventListener("click", () => {
     if (!editor.value || confirm("Clear your current draft?")) {
       previousText = editor.value;
