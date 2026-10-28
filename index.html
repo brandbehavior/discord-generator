@@ -94,6 +94,17 @@
   .counts b { color: var(--ink); font-weight: 700; }
   .clear-btn { border: 0; background: none; color: var(--wine); padding: 4px 0; font-size: .72rem; font-weight: 700; }
   .preview-inner { padding: 20px; }
+  .preview-customize {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;
+    color: var(--muted); font-size: .68rem; font-weight: 800; letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+  .preview-customize input {
+    min-width: 0; width: 120px; border: 1px solid var(--line); border-radius: 6px;
+    padding: 7px 8px; background: var(--surface); color: var(--ink);
+    font-size: .78rem; letter-spacing: 0; text-transform: none;
+  }
+  .preview-customize input:last-child { width: 48px; text-align: center; }
   .discord-window {
     border: 1px solid #e1d8d3; border-radius: 11px; background: #f4f0ed;
     overflow: hidden; min-height: 360px;
@@ -117,6 +128,11 @@
   #rendered p:last-child { margin-bottom: 0; }
   #rendered blockquote { margin: 0 0 .75em; border-left: 3px solid #c7a1a6; padding-left: 10px; color: #6f5e5d; }
   #rendered code { font: .84em var(--mono); background: #e5ddda; border-radius: 4px; padding: 2px 4px; }
+  #rendered .spoiler { background: #40383a; color: transparent; border-radius: 3px; padding: 0 3px; cursor: pointer; }
+  #rendered .spoiler:hover, #rendered .spoiler:focus { color: #fff; }
+  #rendered a { color: #792f43; text-decoration: underline; }
+  #rendered h1, #rendered h2, #rendered h3 { font-family: var(--sans); letter-spacing: -.02em; margin: 0 0 .5em; line-height: 1.25; }
+  #rendered h1 { font-size: 1.35rem; } #rendered h2 { font-size: 1.15rem; } #rendered h3 { font-size: 1rem; }
   #rendered pre { white-space: pre-wrap; background: #e5ddda; padding: 10px; border-radius: 7px; font: .82em/1.5 var(--mono); }
   #rendered ul { padding-left: 1.35em; }
   .preview-caption { margin: 12px 1px 0; color: var(--muted); font: italic .88rem/1.5 var(--serif); }
@@ -187,9 +203,15 @@
         <button class="tool" data-wrap="***" title="Bold and italic"><strong><em>BI</em></strong></button>
         <button class="tool" data-wrap="~~" title="Strikethrough"><s>S</s></button>
         <span class="tool-sep"></span>
+        <button class="tool" data-wrap="__" title="Underline"><u>U</u></button>
+        <button class="tool" data-wrap="||" title="Spoiler">▧ Spoiler</button>
+        <span class="tool-sep"></span>
         <button class="tool" id="quoteButton" title="Quote selected text or add a quote line">❝</button>
         <button class="tool" id="bulletButton" title="Bullet point">• List</button>
+        <button class="tool" id="headingButton" title="Heading">H1</button>
+        <button class="tool" id="linkButton" title="Insert a link">↗ Link</button>
         <button class="tool" id="codeButton" title="Inline code">`code`</button>
+        <button class="tool" id="codeBlockButton" title="Code block">Code block</button>
         <button class="tool" id="symbolsButton" title="Insert a decorative divider">✦ divider</button>
       </div>
       <div class="editor-wrap">
@@ -211,6 +233,12 @@
         <span class="live-label"><span class="live-dot"></span> LIVE PREVIEW</span>
       </div>
       <div class="preview-inner">
+        <div class="preview-customize">
+          <label for="characterName">Preview name</label>
+          <input id="characterName" type="text" maxlength="32" value="your character" aria-label="Preview character name">
+          <label for="avatarInitial">Avatar</label>
+          <input id="avatarInitial" type="text" maxlength="2" value="m" aria-label="Preview avatar letters">
+        </div>
         <div class="discord-window">
           <div class="discord-bar"><span class="channel-icon">#</span> roleplay · preview</div>
           <div class="discord-message">
@@ -261,20 +289,30 @@
   // Output remains the original markdown; this renderer is only for visual preview.
   function renderMarkdown(source) {
     let safe = escapeHTML(source);
-    const codeBlocks = [];
-    safe = safe.replace(/```([\s\S]*?)```/g, (_, code) => {
-      const key = `@@CODEBLOCK${codeBlocks.length}@@`;
-      codeBlocks.push(`<pre><code>${code.replace(/^\n|\n$/g, "")}</code></pre>`);
-      return key;
-    });
-    safe = safe.replace(/`([^`\n]+)`/g, "<code>$1</code>");
+    const placeholders = [];
+    const hold = html => {
+      const token = `@@HOLD${placeholders.length}@@`;
+      placeholders.push(html);
+      return token;
+    };
+
+    // Protect fenced code first so its contents aren't parsed as formatting.
+    safe = safe.replace(/```(?:([a-zA-Z0-9_-]+)\n)?([\s\S]*?)```/g, (_, lang, code) =>
+      hold(`<pre><code>${code.replace(/^\n|\n$/g, "")}</code></pre>`));
+    safe = safe.replace(/`([^`\n]+)`/g, (_, code) => hold(`<code>${code}</code>`));
+
+    // Inline markdown. This is a visual approximation, not a complete Discord parser.
     safe = safe.replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>");
     safe = safe.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-    safe = safe.replace(/\*(.+?)\*/g, "<em>$1</em>");
     safe = safe.replace(/__(.+?)__/g, "<u>$1</u>");
+    safe = safe.replace(/\*(.+?)\*/g, "<em>$1</em>");
+    safe = safe.replace(/_(.+?)_/g, "<em>$1</em>");
     safe = safe.replace(/~~(.+?)~~/g, "<del>$1</del>");
-    const paragraphs = safe.split(/\n{2,}/).map(block => {
-      if (/^@@CODEBLOCK\d+@@$/.test(block)) return block;
+    safe = safe.replace(/\|\|(.+?)\|\|/g, '<span class="spoiler">$1</span>');
+    safe = safe.replace(/\[([^\]]+)\]\((https?:\/\/[^ )]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+
+    const blocks = safe.split(/\n{2,}/).map(block => {
+      if (/^@@HOLD\d+@@$/.test(block)) return block;
       const lines = block.split("\n");
       if (lines.every(line => /^&gt;\s?/.test(line))) {
         return `<blockquote>${lines.map(line => line.replace(/^&gt;\s?/, "")).join("<br>")}</blockquote>`;
@@ -284,10 +322,15 @@
         const tag = ordered ? "ol" : "ul";
         return `<${tag}>${lines.map(line => `<li>${line.replace(/^(?:[-*]|\d+\.)\s/, "")}</li>`).join("")}</${tag}>`;
       }
+      const heading = block.match(/^(#{1,3})\s+([\s\S]*)$/);
+      if (heading) {
+        const level = heading[1].length;
+        return `<h${level}>${heading[2]}</h${level}>`;
+      }
       return `<p>${lines.join("<br>")}</p>`;
     });
-    let result = paragraphs.join("");
-    result = result.replace(/@@CODEBLOCK(\d+)@@/g, (_, index) => codeBlocks[Number(index)]);
+    let result = blocks.join("");
+    result = result.replace(/@@HOLD(\d+)@@/g, (_, index) => placeholders[Number(index)]);
     return result;
   }
 
@@ -301,6 +344,9 @@
     rendered.innerHTML = trimmed
       ? renderMarkdown(text)
       : '<span style="color:#958782;font-style:italic">Your formatted post will appear here as you write.</span>';
+    const name = document.querySelector("#characterName").value.trim() || "your character";
+    document.querySelector(".username").textContent = name;
+    document.querySelector(".avatar").textContent = document.querySelector("#avatarInitial").value.trim().slice(0, 2) || "m";
   }
 
   function wrapSelection(marker, closing = marker) {
@@ -340,7 +386,41 @@
   });
   document.querySelector("#bulletButton").addEventListener("click", () => insertText("• "));
   document.querySelector("#codeButton").addEventListener("click", () => wrapSelection("`"));
+  document.querySelector("#codeBlockButton").addEventListener("click", () => wrapSelection("```\n", "\n```"));
+  document.querySelector("#headingButton").addEventListener("click", () => {
+    const start = editor.selectionStart;
+    const lineStart = editor.value.lastIndexOf("\n", start - 1) + 1;
+    previousText = editor.value;
+    editor.setRangeText("# ", lineStart, lineStart, "end");
+    update();
+    editor.focus();
+  });
+  document.querySelector("#linkButton").addEventListener("click", () => {
+    const start = editor.selectionStart;
+    const end = editor.selectionEnd;
+    const selected = editor.value.slice(start, end) || "link text";
+    const url = prompt("Paste the full URL (https://…) for this link:");
+    if (url && /^https?:\/\//i.test(url.trim())) {
+      previousText = editor.value;
+      const markdown = `[${selected}](${url.trim()})`;
+      editor.setRangeText(markdown, start, end, "select");
+      update();
+      editor.focus();
+    } else if (url) {
+      alert("Please use a full URL beginning with https:// or http://.");
+    }
+  });
   document.querySelector("#symbolsButton").addEventListener("click", () => insertText("\n\n— · — · — ✦ — · — · —\n\n"));
+  document.querySelector("#characterName").addEventListener("input", update);
+  document.querySelector("#avatarInitial").addEventListener("input", update);
+
+  editor.addEventListener("keydown", event => {
+    if (!(event.metaKey || event.ctrlKey)) return;
+    const key = event.key.toLowerCase();
+    if (key === "b") { event.preventDefault(); wrapSelection("**"); }
+    else if (key === "i") { event.preventDefault(); wrapSelection("*"); }
+    else if (key === "k") { event.preventDefault(); document.querySelector("#linkButton").click(); }
+  });
   document.querySelector("#clearButton").addEventListener("click", () => {
     if (!editor.value || confirm("Clear your current draft?")) {
       previousText = editor.value;
