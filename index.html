@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<title>Marginalia — Discord RP Formatter</title>
+<title>Discord Formatting Generator</title>
 <style>
   :root {
     --paper: #f7f1e8;
@@ -72,7 +72,7 @@
   .pane-number { color: var(--wine); font: italic 1rem var(--serif); letter-spacing: 0; }
   .live-label { display: inline-flex; align-items: center; gap: 7px; color: var(--green); font-size: .7rem; font-weight: 700; }
   .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
-  .editor-tools { padding: 13px 17px 0; display: flex; gap: 6px; flex-wrap: wrap; }
+  .editor-tools { padding: 15px 20px 0; display: flex; gap: 6px; flex-wrap: wrap; }
   .tool {
     border: 1px solid var(--line); border-radius: 7px; background: var(--surface);
     color: var(--ink); min-width: 34px; height: 32px; padding: 0 9px;
@@ -81,10 +81,10 @@
   .tool:hover { background: var(--rose-light); border-color: #d7b8bd; }
   .tool strong, .tool em { color: var(--wine); }
   .tool-sep { width: 1px; height: 23px; margin: 4px 3px; background: var(--line); }
-  .editor-wrap { padding: 14px 20px 0; }
+  .editor-wrap { padding: 16px 20px 0; }
   #editor {
     display: block; width: 100%; min-height: 365px; resize: vertical; border: 1px solid var(--line); border-radius: 10px;
-    background: #fffefa; color: var(--ink); padding: 18px 18px 20px;
+    background: #fffefa; color: var(--ink); padding: 22px 24px 24px;
     font: 1rem/1.85 var(--sans); outline-offset: 2px;
   }
   #editor::placeholder { color: #b6a7a0; font-style: normal; }
@@ -182,10 +182,10 @@
 <main class="shell">
   <header class="masthead">
     <div class="brand">
-      <div class="brand-mark" aria-hidden="true">m.</div>
+      <div class="brand-mark" aria-hidden="true">df</div>
       <div>
-        <div class="brand-name">marginalia</div>
-        <div class="brand-sub">a formatter for writers</div>
+        <div class="brand-name">Discord Formatting Generator</div>
+        <div class="brand-sub">A writing tool for roleplayers</div>
       </div>
     </div>
     <div class="header-note">A writing tool for roleplayers.</div>
@@ -212,7 +212,7 @@
         <button class="tool" id="linkButton" title="Insert a link">↗ Link</button>
         <button class="tool" id="codeButton" title="Inline code">`code`</button>
         <button class="tool" id="codeBlockButton" title="Code block">Code block</button>
-        <button class="tool" id="symbolsButton" title="Insert a decorative divider">— divider</button>
+        <button class="tool" id="symbolsButton" title="Insert a simple horizontal divider">— divider</button>
       </div>
       <div class="editor-wrap">
         <textarea id="editor" spellcheck="true" aria-label="Write your roleplay post" placeholder="The first line is always a beginning…&#10;&#10;Write your post here. Select a phrase and use the tools above to format it."></textarea>
@@ -265,7 +265,7 @@
   </section>
 
   <footer class="footer">
-    <span><strong>marginalia</strong> — a little room for the details.</span>
+    <span><strong>Discord Formatting Generator</strong> — made for roleplay writers.</span>
     <span>Your draft stays in this browser tab.</span>
   </footer>
 </main>
@@ -307,7 +307,7 @@
 
     const blocks = safe.split(/\n{2,}/).map(block => {
       if (/^@@HOLD\d+@@$/.test(block)) return block;
-      if (/^[─—-]{5,}$/.test(block.trim())) return `<hr class="plain-divider">`;
+      if (/^(?:-{3,}|[─—]{3,})$/.test(block.trim())) return `<hr class="plain-divider">`;
       const lines = block.split("\n");
       if (lines.every(line => /^&gt;\s?/.test(line))) {
         return `<blockquote>${lines.map(line => line.replace(/^&gt;\s?/, "")).join("<br>")}</blockquote>`;
@@ -436,7 +436,7 @@
     editor.focus();
     update();
   });
-  document.querySelector("#symbolsButton").addEventListener("click", () => insertText("\n\n────────────────────────\n\n"));
+  document.querySelector("#symbolsButton").addEventListener("click", () => insertText("\n\n---\n\n"));
 
   // Keep markdown list/quote prefixes when Enter is pressed; a second Enter on an empty item exits the list.
   editor.addEventListener("keydown", event => {
@@ -448,17 +448,20 @@
       const lineEndRaw = value.indexOf("\n", start);
       const lineEnd = lineEndRaw === -1 ? value.length : lineEndRaw;
       const line = value.slice(lineStart, lineEnd);
-      const match = line.match(/^(\s*)([-*]|\d+\.|>)\s(.*)$/);
+      const match = line.match(/^(\s*)([-*]|(\d+)\.|>)\s(.*)$/);
       if (match && start === end) {
         event.preventDefault();
         previousText = value;
-        const prefix = match[1] + match[2] + " ";
-        const content = match[3];
+        const indent = match[1];
+        const marker = match[2];
+        const content = match[4];
         if (!content.trim()) {
-          editor.setRangeText("", lineStart, lineEnd, "select");
-          editor.setSelectionRange(lineStart, lineStart);
+          // Enter on an empty list/quote line removes its prefix and leaves a blank line.
+          editor.setRangeText("\n", lineStart, lineEnd, "end");
+          editor.setSelectionRange(lineStart + 1, lineStart + 1);
         } else {
-          editor.setRangeText("\n" + prefix, start, end, "end");
+          const nextMarker = match[3] ? `${Number(match[3]) + 1}.` : marker;
+          editor.setRangeText("\n" + indent + nextMarker + " ", start, end, "end");
         }
         update();
         return;
