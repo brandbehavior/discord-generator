@@ -49,6 +49,7 @@
     background: transparent; color: var(--wine); border-radius: 0;
     box-shadow: none; font: 1.25rem/1 var(--sans);
   }
+  .brand-star { display: inline-block; color: var(--wine); background: none; border: 0; border-radius: 0; box-shadow: none; width: auto; height: auto; padding: 0; font: 1.25rem/1 var(--sans); }
   .brand-name { font: 700 1.18rem var(--sans); letter-spacing: -.045em; }
   .brand-sub { margin-top: 3px; color: var(--muted); font-size: .66rem; text-transform: uppercase; letter-spacing: .17em; }
   .intro { display: none; }
@@ -175,7 +176,7 @@
 <main class="shell">
   <header class="masthead">
     <div class="brand">
-      <div class="brand-mark" aria-hidden="true">★</div>
+      <span class="brand-star" aria-hidden="true">★</span>
       <div>
         <div class="brand-name">Discord Formatting Generator</div>
         </div>
