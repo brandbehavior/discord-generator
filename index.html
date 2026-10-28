@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#f7f1e8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <title>Marginalia — Discord RP Formatter</title>
 <style>
   :root {
@@ -19,8 +22,8 @@
     --rose-light: #f5e9e7;
     --green: #697568;
     --shadow: 0 18px 48px rgba(67, 40, 39, .07);
-    --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
-    --sans: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+    --serif: "Montserrat", "Avenir Next", Avenir, "Segoe UI", sans-serif;
+    --sans: "Montserrat", "Avenir Next", Avenir, "Segoe UI", sans-serif;
     --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   }
   * { box-sizing: border-box; }
@@ -44,12 +47,12 @@
   .brand-mark {
     width: 42px; height: 42px; display: grid; place-items: center;
     background: var(--wine); color: #fff8f1; border-radius: 50%;
-    font: italic 1.5rem var(--serif); box-shadow: 0 5px 14px #792f4326;
+    font: 600 1.15rem var(--sans); box-shadow: 0 5px 14px #792f4326;
   }
-  .brand-name { font: 600 1.35rem var(--serif); letter-spacing: -.035em; }
+  .brand-name { font: 700 1.18rem var(--sans); letter-spacing: -.045em; }
   .brand-sub { margin-top: 3px; color: var(--muted); font-size: .66rem; text-transform: uppercase; letter-spacing: .17em; }
-  .header-note { color: var(--muted); font: italic .95rem var(--serif); text-align: right; }
-  .intro { display: flex; justify-content: space-between; align-items: end; gap: 24px; padding: 32px 0 25px; }
+  .header-note { color: var(--muted); font: 500 .82rem var(--sans); text-align: right; }
+  .intro { display: none; }
   .kicker { color: var(--wine); font-size: .68rem; font-weight: 800; letter-spacing: .19em; text-transform: uppercase; margin: 0 0 10px; }
   h1 { font: 500 clamp(2.3rem, 5vw, 4.3rem)/.98 var(--serif); letter-spacing: -.055em; margin: 0; }
   h1 em { color: var(--wine); font-weight: 400; }
@@ -78,19 +81,22 @@
   .tool:hover { background: var(--rose-light); border-color: #d7b8bd; }
   .tool strong, .tool em { color: var(--wine); }
   .tool-sep { width: 1px; height: 23px; margin: 4px 3px; background: var(--line); }
-  .editor-wrap { padding: 12px 20px 0; }
+  .editor-wrap { padding: 14px 20px 0; }
   #editor {
-    display: block; width: 100%; min-height: 365px; resize: vertical; border: 0;
-    background: transparent; color: var(--ink); padding: 7px 0 16px;
-    font: 1.12rem/1.85 var(--serif); outline-offset: -3px;
+    display: block; width: 100%; min-height: 365px; resize: vertical; border: 1px solid var(--line); border-radius: 10px;
+    background: #fffefa; color: var(--ink); padding: 18px 18px 20px;
+    font: 1rem/1.85 var(--sans); outline-offset: 2px;
   }
-  #editor::placeholder { color: #b6a7a0; font-style: italic; }
+  #editor::placeholder { color: #b6a7a0; font-style: normal; }
   .editor-foot {
     display: flex; align-items: center; justify-content: space-between; gap: 12px;
     border-top: 1px solid var(--line); margin: 0 20px; padding: 13px 0 15px;
     color: var(--muted); font-size: .7rem; letter-spacing: .04em;
   }
-  .counts { display: flex; gap: 15px; }
+  .counts { display: flex; gap: 15px; flex-wrap: wrap; }
+  .limit-note { margin: 0 20px 16px; color: var(--muted); font-size: .7rem; line-height: 1.55; }
+  .limit-note strong { color: var(--wine); }
+  .counts .over-limit { color: var(--wine); }
   .counts b { color: var(--ink); font-weight: 700; }
   .clear-btn { border: 0; background: none; color: var(--wine); padding: 4px 0; font-size: .72rem; font-weight: 700; }
   .preview-inner { padding: 20px; }
@@ -133,9 +139,10 @@
   #rendered a { color: #792f43; text-decoration: underline; }
   #rendered h1, #rendered h2, #rendered h3 { font-family: var(--sans); letter-spacing: -.02em; margin: 0 0 .5em; line-height: 1.25; }
   #rendered h1 { font-size: 1.35rem; } #rendered h2 { font-size: 1.15rem; } #rendered h3 { font-size: 1rem; }
+  #rendered .plain-divider { border: 0; border-top: 1px solid #c7a1a6; margin: .9em 0; }
   #rendered pre { white-space: pre-wrap; background: #e5ddda; padding: 10px; border-radius: 7px; font: .82em/1.5 var(--mono); }
   #rendered ul { padding-left: 1.35em; }
-  .preview-caption { margin: 12px 1px 0; color: var(--muted); font: italic .88rem/1.5 var(--serif); }
+  .preview-caption { margin: 12px 1px 0; color: var(--muted); font: 500 .78rem/1.6 var(--sans); }
   .output-area { margin-top: 18px; border-top: 1px solid var(--line); padding-top: 17px; }
   .output-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 9px; }
   .output-label { font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .13em; }
@@ -147,7 +154,7 @@
   .quiet-btn:hover { color: var(--wine); background: var(--rose-light); }
   .copy-btn { border: 0; border-radius: 7px; background: var(--wine); color: #fffaf6; padding: 10px 15px; font-size: .72rem; font-weight: 800; letter-spacing: .04em; }
   .copy-btn:hover { background: var(--wine-dark); }
-  .footer { display: flex; justify-content: space-between; gap: 14px; padding: 22px 2px 0; color: var(--muted); font: italic .86rem var(--serif); }
+  .footer { display: flex; justify-content: space-between; gap: 14px; padding: 22px 2px 0; color: var(--muted); font: 500 .78rem var(--sans); }
   .footer strong { color: var(--wine); font-weight: 500; }
   @media (max-width: 850px) {
     .workspace { grid-template-columns: 1fr; }
@@ -162,7 +169,9 @@
     .intro { padding-top: 25px; }
     .pane-head { padding: 14px; }
     .editor-wrap, .preview-inner { padding-left: 14px; padding-right: 14px; }
+    #editor { padding: 15px; }
     .editor-foot { margin-left: 14px; margin-right: 14px; }
+    .limit-note { margin-left: 14px; margin-right: 14px; }
     .counts { gap: 8px; }
     .counts span { font-size: .64rem; }
     .footer { flex-direction: column; }
@@ -179,17 +188,8 @@
         <div class="brand-sub">a formatter for writers</div>
       </div>
     </div>
-    <div class="header-note">For the words between the lines.</div>
+    <div class="header-note">A writing tool for roleplayers.</div>
   </header>
-
-  <section class="intro">
-    <div>
-      <p class="kicker">The writing room · No. 001</p>
-      <h1>Make the words<br><em>feel like yours.</em></h1>
-      <p class="intro-copy">A quiet little workspace for shaping roleplay posts into Discord-ready markdown. Write on the left; see how it reads on the right.</p>
-    </div>
-    <div class="folio">DISCORD MARKDOWN / 01</div>
-  </section>
 
   <section class="workspace" aria-label="RP formatter workspace">
     <section class="pane" aria-labelledby="write-title">
@@ -212,7 +212,7 @@
         <button class="tool" id="linkButton" title="Insert a link">↗ Link</button>
         <button class="tool" id="codeButton" title="Inline code">`code`</button>
         <button class="tool" id="codeBlockButton" title="Code block">Code block</button>
-        <button class="tool" id="symbolsButton" title="Insert a decorative divider">✦ divider</button>
+        <button class="tool" id="symbolsButton" title="Insert a decorative divider">— divider</button>
       </div>
       <div class="editor-wrap">
         <textarea id="editor" spellcheck="true" aria-label="Write your roleplay post" placeholder="The first line is always a beginning…&#10;&#10;Write your post here. Select a phrase and use the tools above to format it."></textarea>
@@ -225,6 +225,7 @@
         </div>
         <span>LOCAL DRAFT</span>
       </div>
+      <p class="limit-note">Discord message limit: <strong>2,000 characters</strong> for non-Nitro accounts. Nitro supports up to 4,000 characters per message. This counter includes spaces and formatting characters.</p>
     </section>
 
     <section class="pane" aria-labelledby="preview-title">
@@ -276,7 +277,8 @@
   const editor = document.querySelector("#editor");
   const output = document.querySelector("#output");
   const rendered = document.querySelector("#rendered");
-  const statusMessage = document.querySelector(".output-label span");
+  const charCount = document.querySelector("#charCount");
+  const limitNote = document.querySelector(".limit-note");
   let previousText = "";
 
   function escapeHTML(value) {
@@ -285,8 +287,7 @@
     })[char]);
   }
 
-  // A lightweight preview renderer for common Discord markdown.
-  // Output remains the original markdown; this renderer is only for visual preview.
+  // Lightweight visual preview only; copied output remains original Discord Markdown.
   function renderMarkdown(source) {
     let safe = escapeHTML(source);
     const placeholders = [];
@@ -296,23 +297,21 @@
       return token;
     };
 
-    // Protect fenced code first so its contents aren't parsed as formatting.
     safe = safe.replace(/```(?:([a-zA-Z0-9_-]+)\n)?([\s\S]*?)```/g, (_, lang, code) =>
       hold(`<pre><code>${code.replace(/^\n|\n$/g, "")}</code></pre>`));
     safe = safe.replace(/`([^`\n]+)`/g, (_, code) => hold(`<code>${code}</code>`));
-
-    // Inline markdown. This is a visual approximation, not a complete Discord parser.
     safe = safe.replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>");
     safe = safe.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
     safe = safe.replace(/__(.+?)__/g, "<u>$1</u>");
+    safe = safe.replace(/\|\|(.+?)\|\|/g, '<span class="spoiler" tabindex="0" title="Hover or focus to reveal">$1</span>');
     safe = safe.replace(/\*(.+?)\*/g, "<em>$1</em>");
     safe = safe.replace(/_(.+?)_/g, "<em>$1</em>");
     safe = safe.replace(/~~(.+?)~~/g, "<del>$1</del>");
-    safe = safe.replace(/\|\|(.+?)\|\|/g, '<span class="spoiler">$1</span>');
     safe = safe.replace(/\[([^\]]+)\]\((https?:\/\/[^ )]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
 
     const blocks = safe.split(/\n{2,}/).map(block => {
       if (/^@@HOLD\d+@@$/.test(block)) return block;
+      if (/^[─—-]{5,}$/.test(block.trim())) return `<hr class="plain-divider">`;
       const lines = block.split("\n");
       if (lines.every(line => /^&gt;\s?/.test(line))) {
         return `<blockquote>${lines.map(line => line.replace(/^&gt;\s?/, "")).join("<br>")}</blockquote>`;
@@ -329,17 +328,22 @@
       }
       return `<p>${lines.join("<br>")}</p>`;
     });
-    let result = blocks.join("");
-    result = result.replace(/@@HOLD(\d+)@@/g, (_, index) => placeholders[Number(index)]);
-    return result;
+    return blocks.join("").replace(/@@HOLD(\d+)@@/g, (_, index) => placeholders[Number(index)]);
   }
 
   function update() {
     const text = editor.value;
     const trimmed = text.trim();
     document.querySelector("#wordCount").textContent = trimmed ? trimmed.split(/\s+/).length : 0;
-    document.querySelector("#charCount").textContent = text.length;
+    charCount.textContent = text.length;
     document.querySelector("#paragraphCount").textContent = trimmed ? trimmed.split(/\n\s*\n/).filter(Boolean).length : 0;
+    charCount.classList.toggle("over-limit", text.length > 2000);
+    limitNote.classList.toggle("over-limit", text.length > 2000);
+    if (text.length > 2000) {
+      limitNote.innerHTML = `<strong>You're ${text.length - 2000} characters over the 2,000-character non-Nitro limit.</strong> Nitro supports up to 4,000 characters per message. Counts include spaces and Markdown symbols.`;
+    } else {
+      limitNote.innerHTML = 'Discord message limit: <strong>2,000 characters</strong> for non-Nitro accounts. Nitro supports up to 4,000 characters per message. This counter includes spaces and formatting characters.';
+    }
     output.value = text;
     rendered.innerHTML = trimmed
       ? renderMarkdown(text)
@@ -349,13 +353,31 @@
     document.querySelector(".avatar").textContent = document.querySelector("#avatarInitial").value.trim().slice(0, 2) || "m";
   }
 
-  function wrapSelection(marker, closing = marker) {
-    previousText = editor.value;
+  function toggleWrap(marker, closing = marker) {
+    const value = editor.value;
     const start = editor.selectionStart;
     const end = editor.selectionEnd;
-    const selected = editor.value.slice(start, end);
-    editor.setRangeText(marker + selected + closing, start, end, "select");
-    if (!selected) editor.setSelectionRange(start + marker.length, start + marker.length);
+    const selected = value.slice(start, end);
+    previousText = value;
+
+    // If the selection already contains the markers, remove them.
+    if (selected.length >= marker.length + closing.length &&
+        selected.startsWith(marker) && selected.endsWith(closing)) {
+      const unwrapped = selected.slice(marker.length, selected.length - closing.length);
+      editor.setRangeText(unwrapped, start, end, "select");
+      editor.setSelectionRange(start, start + unwrapped.length);
+    // If markers are immediately outside the selection, remove those instead.
+    } else if (selected && value.slice(start - marker.length, start) === marker &&
+               value.slice(end, end + closing.length) === closing) {
+      editor.setRangeText(selected, start - marker.length, end + closing.length, "select");
+      editor.setSelectionRange(start - marker.length, start - marker.length + selected.length);
+    } else if (selected) {
+      editor.setRangeText(marker + selected + closing, start, end, "select");
+      editor.setSelectionRange(start + marker.length, start + marker.length + selected.length);
+    } else {
+      editor.setRangeText(marker + closing, start, end, "end");
+      editor.setSelectionRange(start + marker.length, start + marker.length);
+    }
     editor.focus();
     update();
   }
@@ -369,58 +391,92 @@
     update();
   }
 
-  document.querySelectorAll("[data-wrap]").forEach(button => {
-    button.addEventListener("click", () => wrapSelection(button.dataset.wrap));
-  });
-  document.querySelector("#quoteButton").addEventListener("click", () => {
+  function toggleLinePrefix(prefix) {
+    const value = editor.value;
     const start = editor.selectionStart;
-    const end = editor.selectionEnd;
-    if (start !== end) {
-      const selected = editor.value.slice(start, end).split("\n").map(line => "> " + line).join("\n");
-      previousText = editor.value;
-      editor.setRangeText(selected, start, end, "select");
-      update();
+    const lineStart = value.lastIndexOf("\n", start - 1) + 1;
+    const lineEndRaw = value.indexOf("\n", start);
+    const lineEnd = lineEndRaw === -1 ? value.length : lineEndRaw;
+    const line = value.slice(lineStart, lineEnd);
+    previousText = value;
+    if (line.startsWith(prefix)) {
+      editor.setRangeText(line.slice(prefix.length), lineStart, lineEnd, "select");
+      editor.setSelectionRange(Math.max(lineStart, start - prefix.length), Math.max(lineStart, start - prefix.length));
     } else {
-      insertText("> ");
+      editor.setRangeText(prefix + line, lineStart, lineEnd, "select");
+      editor.setSelectionRange(start + prefix.length, start + prefix.length);
     }
-  });
-  document.querySelector("#bulletButton").addEventListener("click", () => insertText("• "));
-  document.querySelector("#codeButton").addEventListener("click", () => wrapSelection("`"));
-  document.querySelector("#codeBlockButton").addEventListener("click", () => wrapSelection("```\n", "\n```"));
-  document.querySelector("#headingButton").addEventListener("click", () => {
-    const start = editor.selectionStart;
-    const lineStart = editor.value.lastIndexOf("\n", start - 1) + 1;
-    previousText = editor.value;
-    editor.setRangeText("# ", lineStart, lineStart, "end");
-    update();
     editor.focus();
+    update();
+  }
+
+  document.querySelectorAll("[data-wrap]").forEach(button => {
+    button.addEventListener("click", () => toggleWrap(button.dataset.wrap));
   });
+  document.querySelector("#quoteButton").addEventListener("click", () => toggleLinePrefix("> "));
+  document.querySelector("#bulletButton").addEventListener("click", () => toggleLinePrefix("- "));
+  document.querySelector("#codeButton").addEventListener("click", () => toggleWrap("`"));
+  document.querySelector("#codeBlockButton").addEventListener("click", () => toggleWrap("```\n", "\n```"));
+  document.querySelector("#headingButton").addEventListener("click", () => toggleLinePrefix("# "));
   document.querySelector("#linkButton").addEventListener("click", () => {
     const start = editor.selectionStart;
     const end = editor.selectionEnd;
-    const selected = editor.value.slice(start, end) || "link text";
+    const selected = editor.value.slice(start, end);
     const url = prompt("Paste the full URL (https://…) for this link:");
-    if (url && /^https?:\/\//i.test(url.trim())) {
-      previousText = editor.value;
-      const markdown = `[${selected}](${url.trim()})`;
-      editor.setRangeText(markdown, start, end, "select");
-      update();
-      editor.focus();
-    } else if (url) {
+    if (!url) return;
+    if (!/^https?:\/\//i.test(url.trim())) {
       alert("Please use a full URL beginning with https:// or http://.");
+      return;
     }
+    previousText = editor.value;
+    const whole = editor.value;
+    const existing = selected.match(/^\[([^\]]+)\]\((https?:\/\/[^ )]+)\)$/);
+    if (existing) {
+      editor.setRangeText(existing[1], start, end, "select");
+    } else {
+      const label = selected || "link text";
+      editor.setRangeText(`[${label}](${url.trim()})`, start, end, "select");
+    }
+    editor.focus();
+    update();
   });
-  document.querySelector("#symbolsButton").addEventListener("click", () => insertText("\n\n— · — · — ✦ — · — · —\n\n"));
-  document.querySelector("#characterName").addEventListener("input", update);
-  document.querySelector("#avatarInitial").addEventListener("input", update);
+  document.querySelector("#symbolsButton").addEventListener("click", () => insertText("\n\n────────────────────────\n\n"));
 
+  // Keep markdown list/quote prefixes when Enter is pressed; a second Enter on an empty item exits the list.
   editor.addEventListener("keydown", event => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      const start = editor.selectionStart;
+      const end = editor.selectionEnd;
+      const value = editor.value;
+      const lineStart = value.lastIndexOf("\n", start - 1) + 1;
+      const lineEndRaw = value.indexOf("\n", start);
+      const lineEnd = lineEndRaw === -1 ? value.length : lineEndRaw;
+      const line = value.slice(lineStart, lineEnd);
+      const match = line.match(/^(\s*)([-*]|\d+\.|>)\s(.*)$/);
+      if (match && start === end) {
+        event.preventDefault();
+        previousText = value;
+        const prefix = match[1] + match[2] + " ";
+        const content = match[3];
+        if (!content.trim()) {
+          editor.setRangeText("", lineStart, lineEnd, "select");
+          editor.setSelectionRange(lineStart, lineStart);
+        } else {
+          editor.setRangeText("\n" + prefix, start, end, "end");
+        }
+        update();
+        return;
+      }
+    }
     if (!(event.metaKey || event.ctrlKey)) return;
     const key = event.key.toLowerCase();
-    if (key === "b") { event.preventDefault(); wrapSelection("**"); }
-    else if (key === "i") { event.preventDefault(); wrapSelection("*"); }
+    if (key === "b") { event.preventDefault(); toggleWrap("**"); }
+    else if (key === "i") { event.preventDefault(); toggleWrap("*"); }
     else if (key === "k") { event.preventDefault(); document.querySelector("#linkButton").click(); }
   });
+
+  document.querySelector("#characterName").addEventListener("input", update);
+  document.querySelector("#avatarInitial").addEventListener("input", update);
   document.querySelector("#clearButton").addEventListener("click", () => {
     if (!editor.value || confirm("Clear your current draft?")) {
       previousText = editor.value;
