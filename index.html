@@ -107,16 +107,30 @@
     padding: 8px 10px; background: var(--surface); color: var(--ink);
     font-size: .78rem; letter-spacing: 0; text-transform: none;
   }
-  .discord-window {
-    border: 1px solid #e1d8d3; border-radius: 11px; background: #f4f0ed;
-    overflow: hidden; min-height: 360px;
-  }
+.discord-window {
+  border: 1px solid #e1d8d3;
+  border-radius: 11px;
+  background: #f4f0ed;
+  overflow: hidden;
+  height: 365px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
   .discord-bar {
     padding: 11px 14px; background: #e8dfdb; color: #685d59; font-size: .72rem;
     display: flex; align-items: center; gap: 8px; font-weight: 700;
   }
   .channel-icon { color: var(--wine); font-size: 1.05rem; }
-  .discord-message { display: flex; gap: 12px; padding: 20px 15px; }
+.discord-message {
+  display: flex;
+  gap: 12px;
+  padding: 20px 15px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
   .avatar {
     width: auto; height: auto; display: block; flex: 0 0 auto;
     background: transparent; color: var(--wine); border-radius: 0;
@@ -154,7 +168,7 @@
   @media (max-width: 850px) {
     .workspace { grid-template-columns: 1fr; }
     #editor { min-height: 270px; }
-    .discord-window { min-height: 260px; }
+.discord-window { height: 270px; min-height: 0; }
     .intro { align-items: start; }
     .folio { display: none; }
   }
