@@ -89,7 +89,10 @@
   .counts { display: flex; gap: 15px; flex-wrap: wrap; }
   .limit-note { margin: 0 20px 18px; color: var(--muted); font-size: .7rem; line-height: 1.55; }
   .limit-note strong { color: var(--wine); }
-  .counts .over-limit { color: var(--wine); }
+  .counts .near-limit { color: #9a7848; }
+.counts .over-limit { color: var(--wine); }
+.limit-note.near-limit { color: #806d50; }
+.limit-note.over-limit { color: var(--wine); }
   .counts b { color: var(--ink); font-weight: 700; }
   .clear-btn { border: 0; background: none; color: var(--wine); padding: 4px 0; font-size: .72rem; font-weight: 700; }
   .preview-inner { padding: 20px; }
@@ -310,13 +313,28 @@
     document.querySelector("#wordCount").textContent = trimmed ? trimmed.split(/\s+/).length : 0;
     charCount.textContent = text.length;
     document.querySelector("#paragraphCount").textContent = trimmed ? trimmed.split(/\n\s*\n/).filter(Boolean).length : 0;
-    charCount.classList.toggle("over-limit", text.length > 2000);
-    limitNote.classList.toggle("over-limit", text.length > 2000);
-    if (text.length > 2000) {
-      limitNote.innerHTML = `<strong>You're ${text.length - 2000} characters over the 2,000-character non-Nitro limit.</strong> Nitro supports up to 4,000 characters per message. Counts include spaces and Markdown symbols.`;
-    } else {
-      limitNote.innerHTML = 'Discord message limit: <strong>2,000 characters</strong> for non-Nitro accounts. Nitro supports up to 4,000 characters per message. This counter includes spaces and formatting characters.';
-    }
+charCount.classList.remove("near-limit", "over-limit");
+limitNote.classList.remove("near-limit", "over-limit");
+
+if (text.length > 4000) {
+  charCount.classList.add("over-limit");
+  limitNote.classList.add("over-limit");
+  limitNote.innerHTML =
+    `<strong>Over the Nitro limit by ${text.length - 4000} characters.</strong> Split your post into multiple messages. Counts include spaces and Markdown formatting.`;
+} else if (text.length > 2000) {
+  charCount.classList.add("over-limit");
+  limitNote.classList.add("over-limit");
+  limitNote.innerHTML =
+    `<strong>${text.length - 2000} characters over the non-Nitro limit.</strong> Your post is still within Nitro's 4,000-character limit.`;
+} else if (text.length >= 1800) {
+  charCount.classList.add("near-limit");
+  limitNote.classList.add("near-limit");
+  limitNote.innerHTML =
+    `<strong>Approaching the non-Nitro limit.</strong> ${2000 - text.length} characters remaining before 2,000. Nitro supports up to 4,000 characters per message.`;
+} else {
+  limitNote.innerHTML =
+    'Discord message limit: <strong>2,000 characters</strong> for non-Nitro accounts. Nitro supports up to 4,000 characters per message. This counter includes spaces and formatting characters.';
+}
     output.value = text;
     rendered.innerHTML = trimmed
       ? renderMarkdown(text)
