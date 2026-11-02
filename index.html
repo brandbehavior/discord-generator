@@ -165,6 +165,14 @@
   .quiet-btn:hover { color: var(--wine); background: var(--rose-light); }
   .copy-btn { border: 0; border-radius: 7px; background: var(--wine); color: #fffaf6; padding: 10px 15px; font-size: .72rem; font-weight: 800; letter-spacing: .04em; }
   .copy-btn:hover { background: var(--wine-dark); }
+  .copy-btn {
+  min-width: 105px;
+  transition: background .2s ease;
+}
+
+.copy-btn.copied {
+  background: var(--green);
+}
   @media (max-width: 850px) {
     .workspace { grid-template-columns: 1fr; }
     #editor { min-height: 270px; }
@@ -491,20 +499,35 @@ if (text.length > 4000) {
       editor.focus();
     }
   });
-  document.querySelector("#copyButton").addEventListener("click", async () => {
-    if (!output.value) {
-      document.querySelector(".output-label span").textContent = "Write something first to create markdown.";
-      return;
-    }
-    try {
-      await navigator.clipboard.writeText(output.value);
-      document.querySelector(".output-label span").textContent = "Copied — ready to paste into Discord.";
-    } catch {
-      output.focus();
-      output.select();
-      document.querySelector(".output-label span").textContent = "Select the text and press Ctrl/Cmd+C to copy.";
-    }
-  });
+const copyButton = document.querySelector("#copyButton");
+let copyTimeout;
+
+copyButton.addEventListener("click", async () => {
+  if (!output.value) {
+    copyButton.textContent = "WRITE SOMETHING";
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(output.value);
+
+    copyButton.textContent = "COPIED!";
+    copyButton.classList.add("copied");
+    copyButton.setAttribute("aria-label", "Text copied to clipboard");
+
+    clearTimeout(copyTimeout);
+    copyTimeout = setTimeout(() => {
+      copyButton.textContent = "COPY TEXT";
+      copyButton.classList.remove("copied");
+      copyButton.removeAttribute("aria-label");
+    }, 1500);
+
+  } catch {
+    copyButton.textContent = "SELECT TO COPY";
+    output.focus();
+    output.select();
+  }
+});
   editor.addEventListener("input", update);
   update();
 </script>
