@@ -150,6 +150,11 @@
   #rendered a { color: #792f43; text-decoration: underline; }
   #rendered h1, #rendered h2, #rendered h3 { font-family: var(--sans); letter-spacing: -.02em; margin: 0 0 .5em; line-height: 1.25; }
   #rendered h1 { font-size: 1.35rem; } #rendered h2 { font-size: 1.15rem; } #rendered h3 { font-size: 1rem; }
+  #rendered .subtext {
+  font-size: .78rem;
+  line-height: 1.5;
+  color: #80736e;
+}
   #rendered .plain-divider { border: 0; border-top: 1px solid #c7a1a6; margin: .9em 0; }
   #rendered pre { white-space: pre-wrap; background: #e5ddda; padding: 10px; border-radius: 7px; font: .82em/1.5 var(--mono); }
   #rendered ul { padding-left: 1.35em; }
@@ -224,6 +229,7 @@
         <button class="tool" id="quoteButton" title="Quote selected text or add a quote line">❝</button>
         <button class="tool" id="bulletButton" title="Bullet point">• List</button>
         <button class="tool" id="headingButton" title="Heading">H1</button>
+        <button class="tool" id="subtextButton" title="Discord subtext">Subtext</button>
         <button class="tool" id="linkButton" title="Insert a link">↗ Link</button>
         <button class="tool" id="codeButton" title="Inline code">`code`</button>
         <button class="tool" id="codeBlockButton" title="Code block">Code block</button>
@@ -311,6 +317,9 @@
       if (/^@@HOLD\d+@@$/.test(block)) return block;
       if (/^(?:-{3,}|[─—]{3,})$/.test(block.trim())) return `<hr class="plain-divider">`;
       const lines = block.split("\n");
+      if (lines.every(line => line.startsWith("-# "))) {
+  return `<p class="subtext">${lines.map(line => line.slice(3)).join("<br>")}</p>`;
+}
       if (lines.every(line => /^&gt;\s?/.test(line))) {
         return `<blockquote>${lines.map(line => line.replace(/^&gt;\s?/, "")).join("<br>")}</blockquote>`;
       }
@@ -430,6 +439,7 @@ if (text.length > 4000) {
   document.querySelector("#codeButton").addEventListener("click", () => toggleWrap("`"));
   document.querySelector("#codeBlockButton").addEventListener("click", () => toggleWrap("```\n", "\n```"));
   document.querySelector("#headingButton").addEventListener("click", () => toggleLinePrefix("# "));
+  document.querySelector("#subtextButton").addEventListener("click", () => toggleLinePrefix("-# "));
   document.querySelector("#linkButton").addEventListener("click", () => {
     const start = editor.selectionStart;
     const end = editor.selectionEnd;
